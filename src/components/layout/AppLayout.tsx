@@ -9,7 +9,8 @@ import {
   LogOut, 
   Menu,
   X,
-  FileText
+  FileText,
+  FileStack
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -19,6 +20,7 @@ interface AppLayoutProps {
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/templates', label: 'Templates', icon: FileStack },
   { href: '/history', label: 'History', icon: History },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];

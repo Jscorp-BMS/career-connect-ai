@@ -23,6 +23,7 @@ export type Database = {
           language: string
           model_used: string
           resume_id: string
+          template_id: string | null
         }
         Insert: {
           created_at?: string
@@ -32,6 +33,7 @@ export type Database = {
           language?: string
           model_used: string
           resume_id: string
+          template_id?: string | null
         }
         Update: {
           created_at?: string
@@ -41,6 +43,7 @@ export type Database = {
           language?: string
           model_used?: string
           resume_id?: string
+          template_id?: string | null
         }
         Relationships: [
           {
@@ -48,6 +51,13 @@ export type Database = {
             columns: ["resume_id"]
             isOneToOne: false
             referencedRelation: "resumes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_messages_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "message_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -75,6 +85,48 @@ export type Database = {
           full_name?: string
           id?: string
           phone?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      message_templates: {
+        Row: {
+          created_at: string
+          custom_instructions: string | null
+          customer_type: string
+          description: string | null
+          id: string
+          include_sections: Json | null
+          is_default: boolean | null
+          name: string
+          tone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_instructions?: string | null
+          customer_type: string
+          description?: string | null
+          id?: string
+          include_sections?: Json | null
+          is_default?: boolean | null
+          name: string
+          tone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_instructions?: string | null
+          customer_type?: string
+          description?: string | null
+          id?: string
+          include_sections?: Json | null
+          is_default?: boolean | null
+          name?: string
+          tone?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
