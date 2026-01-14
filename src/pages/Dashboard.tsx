@@ -20,7 +20,8 @@ import {
   Mail,
   MessageSquare,
   Sparkles,
-  Clock
+  Clock,
+  FileStack
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -33,6 +34,13 @@ interface RecentMessage {
   created_at: string;
 }
 
+interface Template {
+  id: string;
+  name: string;
+  customer_type: string;
+  is_default: boolean;
+}
+
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const [customerName, setCustomerName] = useState('');
@@ -41,6 +49,8 @@ const Dashboard: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [language, setLanguage] = useState('english');
   const [includeQuestions, setIncludeQuestions] = useState(true);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(false);
   const [generatedMessage, setGeneratedMessage] = useState('');
   const [recentMessages, setRecentMessages] = useState<RecentMessage[]>([]);
@@ -50,6 +60,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     loadUserSettings();
     loadRecentMessages();
+    loadTemplates();
   }, [user]);
 
   const loadUserSettings = async () => {
@@ -64,6 +75,25 @@ const Dashboard: React.FC = () => {
     if (data) {
       setLanguage(data.default_language);
       setIncludeQuestions(data.include_interview_questions);
+    }
+  };
+
+  const loadTemplates = async () => {
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('message_templates')
+      .select('id, name, customer_type, is_default')
+      .eq('user_id', user.id)
+      .order('is_default', { ascending: false });
+
+    if (data) {
+      setTemplates(data);
+      // Set default template if exists
+      const defaultTemplate = data.find(t => t.is_default);
+      if (defaultTemplate) {
+        setSelectedTemplateId(defaultTemplate.id);
+      }
     }
   };
 
@@ -205,6 +235,7 @@ const Dashboard: React.FC = () => {
           includeQuestions,
           fileUrl: urlData.publicUrl,
           fileType: fileExt,
+          templateId: selectedTemplateId || undefined,
         },
       });
 
@@ -357,6 +388,29 @@ const Dashboard: React.FC = () => {
                     </label>
                   </div>
                 </div>
+
+                {/* Template Selection */}
+                {templates.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-2">
+                      <FileStack className="w-4 h-4 text-muted-foreground" />
+                      Message Template
+                    </Label>
+                    <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a template (optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">No template (default)</SelectItem>
+                        {templates.map((template) => (
+                          <SelectItem key={template.id} value={template.id}>
+                            {template.name} {template.is_default && '⭐'}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
