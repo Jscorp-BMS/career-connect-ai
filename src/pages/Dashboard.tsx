@@ -49,7 +49,7 @@ const Dashboard: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [language, setLanguage] = useState('english');
   const [includeQuestions, setIncludeQuestions] = useState(true);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('none');
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(false);
   const [generatedMessage, setGeneratedMessage] = useState('');
@@ -235,7 +235,7 @@ const Dashboard: React.FC = () => {
           includeQuestions,
           fileUrl: urlData.publicUrl,
           fileType: fileExt,
-          templateId: selectedTemplateId || undefined,
+          templateId: selectedTemplateId === 'none' ? undefined : selectedTemplateId,
         },
       });
 
@@ -401,7 +401,7 @@ const Dashboard: React.FC = () => {
                         <SelectValue placeholder="Select a template (optional)" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No template (default)</SelectItem>
+                        <SelectItem value="none">No template (default)</SelectItem>
                         {templates.map((template) => (
                           <SelectItem key={template.id} value={template.id}>
                             {template.name} {template.is_default && '⭐'}
